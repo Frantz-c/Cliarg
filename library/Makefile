@@ -2,10 +2,10 @@ CFLAGS = -O6 -std=c99
 CC     = gcc
 
 
-../example: ../example.o ../cmdarg.a
+../example: ../example.o ../cliarg.a
 	$(CC) $^ -o ../example $(CFLAGS)
 
-../cmdarg.a: main.o error.o print.o functions.o
+../cliarg.a: main.o error.o print.o functions.o
 	ar rcs $@ $^
 
 ../example.o: ../example.c
