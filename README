@@ -1,0 +1,25 @@
+CODES ERREUR *error[]
+
+"[\d]argument"
+
+0 = erreur de syntaxe (nom invalide)
+    exemples : -long, --c, -, a, ...
+
+1 = erreur de type (bool attendu)
+    exemple : "r" => -r=truc
+
+2 = erreur valeur (valeur attendue)
+    exemples : "d:" => -d [ou] -d=
+
+3 = erreur paramètre (paramètre non-attendu)
+    exemple : "b", "bool", "s.", "size"; => ./prog -a --truc=machin
+
+4 = erreur type (int attendu)
+    exemple : "s." => --size="int"
+
+5 = erreur longueur argument (max 40=80)
+
+6 = erreur virgules conséutives type str_array
+    exemple : "s:+" => -s="str1,str2,,str4"
+
+7 = erreur pas d'argument
