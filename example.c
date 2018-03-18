@@ -37,8 +37,10 @@ int main(int argc, char *argv[])
   Cliarg_free_error(&error);
   Cliarg_free_arguments(&args);
 
-  printf("word = \"%s\"\n", word);
-  free(word);
+  if (word) {
+    printf("word = \"%s\"\n", word);
+    free(word);
+  }
 
   return 0;
 }
