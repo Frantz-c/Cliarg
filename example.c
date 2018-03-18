@@ -8,7 +8,6 @@ int main(int argc, char *argv[])
   char    **error = NULL; // Get the errors
   char     *word  = NULL; // For get the "w" argument
   cliarg_t *args  = NULL; // geted arguments structure
-  cliarg_t *tmp   = NULL; // pointer on the structure cliarg_t
   
   // liste of the expected arguments ("short name + type", "long name", ...)
   char *arglist[] = {
