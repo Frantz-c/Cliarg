@@ -1,95 +1,55 @@
-#ifndef FC_CLIARG_H_31102017
-#define FC_CLIARG_H_31102017
+/* ************************************************************************** */
+/*                                                          LE - /            */
+/*                                                              /             */
+/*   cliarg.h                                         .::    .:/ .      .::   */
+/*                                                 +:+:+   +:    +:  +:+:+    */
+/*   By: fcordon <marvin@le-101.fr>                 +:+   +:    +:    +:+     */
+/*                                                 #+#   #+    #+    #+#      */
+/*   Created: 2018/12/21 15:53:08 by fcordon      #+#   ##    ##    #+#       */
+/*   Updated: 2018/12/21 19:20:31 by fcordon     ###    #+. /#+    ###.fr     */
+/*                                                         /                  */
+/*                                                        /                   */
+/* ************************************************************************** */
 
+# include "../libft_clean/libft.h"
+# include <stdio.h>
 
-/* DEFINES ===================================================*/
-
-
-#define STR   1
-#define STR_A 2
-#define INT   3
-#define INT_A 4
-#define BOOL  5
-
-#define CLIARG_NO_ARGUMENTS '7'
-
-#define INTEGER(var)        ((int*)(var))
-#define INTARRAY(var)       ((int*)(var))
-#define STRING(var)         ((char*)(var))
-#define STRARRAY(var)       ((char**)(var))
-
-#define CLIARG_SET_INT(var, val) \
-  do{\
-  (var) = malloc(sizeof(int));\
-  *(var) = val;\
-  }while(0);
-
-#define CLIARG_SET_STR(var, str) \
-  do{\
-  (var) = malloc(sizeof(char) * (strlen(str) + 1));\
-  strcpy(var, str);\
-  (var)[strlen(str)] = '\0';\
-  }while(0);
-
-
-/* STRUCTURES ================================================*/
-
-
-typedef struct cliarg_t
+struct	s_cli_error
 {
-  char  _name;
-  char  _type;     /* STR, INT, STR_P, INT_P, BOOL */
-  char  _vcount;   /* array length if it's an array */
+	char	*arg;
+	int		error;
+};
 
-  void  *value;   
+typedef struct s_cli	t_cli;
 
-  struct cliarg_t *_next;
-}
-cliarg_t;
+struct	s_cli
+{
+	char	*sname;
+	char	*lname;
+	void	*value;
+	int		type;				// INT_TYPE, ...
+	int		len;				// uniquement si option '+'
+	long	min;				// private
+	long	max;				// private
+	int		value_is_next_arg;	// private
+	int		plus;				// private
+};
 
+#define CLI_ERROR				-1
+#define CLI_INVALID_NAME		1
+#define CLI_INVALID_TYPE		2
+#define CLI_NO_VALUE			3
+#define CLI_DUPLICATE_AV		4
 
-/* PROTOTYPES =================================================*/
+#define INT_TYPE				0x1
+#define FLOAT_TYPE				0x2
+#define STRING_TYPE				0x4
+#define BOOL_TYPE				0x8
 
+extern int		invalid_fmt(const char **fmt);
+extern int		cli_get_type(const char **s);
+extern void		cli_print_error(void);
+extern int		set_cli_err(int error, const char *arg);
+extern t_cli	**cli_get_arguments(const char **fmt, int ac, char **av);
 
-/*
-** Check arguments and return a structure cliarg_t containing 
-** arguments and values
-*/
-extern cliarg_t *Cliarg_check_arguments(char *arglist[], char *cli_arg[], unsigned char cli_len, char **error[]);
-
-/*
-** return an argument of the cliarg_t struct founded by short name
-*/
-extern cliarg_t *Cliarg_get_argument(cliarg_t *ca, char name);
-
-/*
-** Print arguments, values and types from cmdarg_t linked list
-*/
-extern void Cliarg_show_arguments(cliarg_t *args);
-
-/*
-** free the cliarg_t linked list from the memory
-*/
-extern void Cliarg_free_arguments(cliarg_t **args);
-
-/*
-** return the type of the sliarg_t element
-*/
-extern char Cliarg_get_type(cliarg_t *args, char name);
-
-/*
-** return the value of the cliarg_t struct founded by short name
-*/
-extern void *Cliarg_get_copy_value(cliarg_t *args, char name, char *count);
-
-/*
-** Print the errors writed into the string array "error"
-*/
-extern void Cliarg_print_error(FILE *f, char *error[]);
-
-/*
-** Free the string array "error" from the memory
-*/
-extern void Cliarg_free_error(char **error[]);
-
-#endif
+extern struct s_cli_error	g_cli_error;
