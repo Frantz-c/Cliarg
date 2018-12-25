@@ -11,7 +11,7 @@
 /*                                                        /                   */
 /* ************************************************************************** */
 
-# include "../libft_clean/libft.h"
+# include "libft.h"
 # include <stdio.h>
 
 struct	s_cli_error
@@ -33,6 +33,7 @@ struct	s_cli
 	long	max;				// private
 	int		value_is_next_arg;	// private
 	int		plus;				// private
+	int		flag;				// overflow, underflow, invalid, ...
 };
 
 #define CLI_ERROR				-1
@@ -40,6 +41,11 @@ struct	s_cli
 #define CLI_INVALID_TYPE		2
 #define CLI_NO_VALUE			3
 #define CLI_DUPLICATE_AV		4
+
+// flag values
+#define CLI_INVALID_VALUE       0x1
+#define CLI_OVERFLOW_VALUE      0x2
+#define CLI_UNDERFLOW_VALUE     0x4
 
 #define INT_TYPE				0x1
 #define FLOAT_TYPE				0x2
@@ -51,5 +57,11 @@ extern int		cli_get_type(const char **s);
 extern void		cli_print_error(void);
 extern int		set_cli_err(int error, const char *arg);
 extern t_cli	**cli_get_arguments(const char **fmt, int ac, char **av);
+extern int      search_long_argument(t_cli *arg, int ac, char *av[], int checked[]);
+extern void     set_str_arg_value(t_cli *cli);
+extern void		set_int_arg_value(t_cli *cli);
+extern void     set_arg_by_type(t_cli *arg);
+extern int      search_short_argument_next(t_cli *arg, int ac, char *av[], int checked[]);
+extern int      search_short_argument(t_cli *arg, int ac, char *av[], int checked[]);
 
 extern struct s_cli_error	g_cli_error;

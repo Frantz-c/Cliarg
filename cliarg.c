@@ -11,7 +11,7 @@
 /*                                                        /                   */
 /* ************************************************************************** */
 
-#include "../libft_clean/libft.h"
+#include "libft.h"
 #include "cliarg.h"
 #include <stdio.h>
 
@@ -83,6 +83,8 @@ extern void	cli_argfree(t_cli **arg)
 			(*arg)->sname, (*arg)->lname, (*arg)->value,
 			(*arg)->type, (*arg)->min, (*arg)->max, (*arg)->value_is_next_arg
 		);
+        if ((*arg)->flag != 0)
+            puts("\e[0;31mArgument not well formated\e[0m\n");
 
 		if ((*arg)->sname)
 			free((*arg)->sname);

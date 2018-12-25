@@ -11,7 +11,7 @@
 /*                                                        /                   */
 /* ************************************************************************** */
 
-#include "../libft_clean/libft.h"
+#include "libft.h"
 #include "cliarg.h"
 
 t_cli	**free_cli_and_return_null(t_cli **cli)
@@ -40,6 +40,7 @@ t_cli	*new_arg(void)
 	new = malloc(sizeof(t_cli));
 	new->value = NULL;
 	new->type = 0;
+	new->flag = 0;
 	new->min = 0x8000000000000000L;
 	new->max = 0x7fffffffffffffffL;
 	new->len = 0;
@@ -47,120 +48,6 @@ t_cli	*new_arg(void)
 	new->sname = NULL;
 	new->lname = NULL;
 	return (new);
-}
-/*
-int		get_argument_short(t_cli *cli, int ac, char **av)
-{
-	char		*eq_pos;
-	const int	slen = ft_strlen(cli->lname);
-	int			i;
-
-	i = 0;
-	while (i < ac)
-	{
-		if (!ft_strncmp(cli->lname, av[i], slen))
-		{
-			if ((eq_pos = ft_strchr(av[i], '=')) == NULL)
-			{
-				set_cli_err(CLI_NO_VALUE, ft_strdup(av[i]));
-				return (CLI_ERROR);
-			}
-			cli->value = ft_strdup(eq_pos + 1);
-			return (1);
-		}
-		i++;
-	}
-	return (0);
-}
-*/
-
-int		get_arg_long_bool(t_cli *cli, int ac, char **av, int checked[])
-{
-	int			i;
-
-	i = 0;
-	while (i < ac)
-	{
-		printf("\e[0;33mcmp(\"%s\", \"%s\")\e[0m\n", cli->lname, av[i]);
-		if (!checked[i] && !ft_strcmp(cli->lname, av[i]))
-		{
-			cli->value = ft_strdup("");
-			checked[i] = 1;
-			return (1);
-		}
-		i++;
-	}
-	return (0);
-}
-
-int		get_arg_long(t_cli *cli, int ac, char **av, int checked[])
-{
-	char		*eq_pos;
-	const int	slen = ft_strlen(cli->lname);
-	int			i;
-
-	i = 0;
-	while (i < ac)
-	{
-		printf("\e[0;33mcmp(\"%s\", \"%s\")\e[0m\n", cli->lname, av[i]);
-		if (!checked[i] && !ft_strncmp(cli->lname, av[i], slen))
-		{
-			if ((eq_pos = ft_strchr(av[i], '=')) == NULL)
-			{
-				set_cli_err(CLI_NO_VALUE, ft_strdup(av[i]));
-				return (CLI_ERROR);
-			}
-			cli->value = ft_strdup(eq_pos + 1);
-			checked[i] = 1;
-			return (1);
-		}
-		i++;
-	}
-	return (0);
-}
-
-// next arg
-int		get_arg_long2(t_cli *cli, int ac, char **av, int checked[])
-{
-	int		i;
-
-	i = 0;
-	while (i < ac)
-	{
-		printf("\e[0;33mcmp(\"%s\", \"%s\")\e[0m\n", cli->lname, av[i]);
-		if (!checked[i] && !ft_strcmp(cli->lname, av[i]))
-		{
-			if (i + 1 == ac)
-			{
-				set_cli_err(CLI_NO_VALUE, ft_strdup(av[i]));
-				return (CLI_ERROR);
-			}
-			cli->value = ft_strdup(av[i + 1]);
-			checked[i] = 1;
-			return (1);
-		}
-		i++;
-	}
-	return (0);
-}
-
-int		get_arg_long2_bool(t_cli *cli, int ac, char **av, int checked[])
-{
-	int		i;
-
-	i = 0;
-	while (i < ac)
-	{
-		printf("\e[0;33mcmp(\"%s\", \"%s\")\e[0m\n", cli->lname, av[i]);
-		if (!checked[i] && !ft_strcmp(cli->lname, av[i]))
-		{
-			cli->value = ft_strdup("");
-			checked[i] = 1;
-			return (1);
-		}
-		i++;
-	}
-	return (0);
 }
 
 t_cli	**cli_search_arguments(t_cli **arg, int ac, char **av)
@@ -174,32 +61,31 @@ t_cli	**cli_search_arguments(t_cli **arg, int ac, char **av)
 	while (arg[i])
 	{
 		if (arg[i]->lname)
-		{
-			if (arg[i]->value_is_next_arg)
-			{
-				if (arg[i]->type != BOOL_TYPE &&
-					get_arg_long2(arg[i], ac, av, checked) == CLI_ERROR)
-					return (free_cli_and_return_null(arg));
-				else if (arg[i]->type == BOOL_TYPE &&
-						get_arg_long2_bool(arg[i], ac, av, checked) == CLI_ERROR)
-					return (free_cli_and_return_null(arg));
-			}
-			else
-			{
-				if (arg[i]->type != BOOL_TYPE &&
-					get_arg_long(arg[i], ac, av, checked) == CLI_ERROR)
-					return (free_cli_and_return_null(arg));
-				else if (arg[i]->type == BOOL_TYPE &&
-						get_arg_long_bool(arg[i], ac, av, checked) == CLI_ERROR)
-					return (free_cli_and_return_null(arg));
-			}
-		}
-		i++;
-		printf("arg[i] = %p\n", (void*)arg[i]);
-	}
+            if (search_long_argument(arg[i], ac, av, checked) == CLI_ERROR)
+                return (free_cli_and_return_null(arg));
+        i++;
+    }
 	i = 0;
+	while (arg[i])
+	{
+        if (arg[i]->sname && arg[i]->value_is_next_arg && arg[i]->value == NULL)
+        {
+            if (search_short_argument_next(arg[i], ac, av, checked) == CLI_ERROR)
+                return (free_cli_and_return_null(arg));
+        }
+		i++;
+	}
+    i = 0;
+	while (arg[i])
+	{
+        if (arg[i]->sname && !arg[i]->value_is_next_arg && arg[i]->value == NULL)
+        {
+            if (search_short_argument(arg[i], ac, av, checked) == CLI_ERROR)
+                return (free_cli_and_return_null(arg));
+        }
+		i++;
+	}
 	return (arg);
-	//return (cli_search_arguments2(arg, ac, av, checked));
 }
 
 
@@ -230,15 +116,13 @@ void			set_argument_name(const char **fmt, t_cli *arg)
 
 	while (*end == '-')
 		end++;
-	while (ft_isalpha(*end))
-		end++;
-	if (*end == '|' || *end == '(' || *end == '\0')
+	end++;
+	if (!ft_isalpha(*end))
 	{
 		arg->sname = ft_strndup(s, end - s);
 		if (*end == '|')
 		{
-			end++;
-			s = end;
+			s = ++end;
 			while (*end == '-')
 				end++;
 			while (ft_isalpha(*end))
@@ -247,7 +131,11 @@ void			set_argument_name(const char **fmt, t_cli *arg)
 		}
 	}
 	else
+	{
+		while (ft_isalpha(*end))
+			end++;
 		arg->lname = ft_strndup(s, end - s);
+	}
 	*fmt = end;
 }
 

@@ -11,7 +11,7 @@
 /*                                                        /                   */
 /* ************************************************************************** */
 
-#include "../libft_clean/libft.h"
+#include "libft.h"
 #include "cliarg.h"
 
 static int		is_valid_name_prefix(const char **s)
