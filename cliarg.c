@@ -13,9 +13,8 @@
 
 #include "libft.h"
 #include "cliarg.h"
-#include <stdio.h>
 
-struct s_cli_error	g_cli_error = {0, 0};
+struct s_cli_error	g_cli_error;
 
 /*
 "-R--recursive(int:1,10+)"		= -R=[value] ou --recursive=[value]
@@ -40,27 +39,19 @@ extern void		cli_print_error(void)
 extern int		set_cli_err(int error, const char *arg)
 {
 	g_cli_error.error = error;
-	g_cli_error.arg = ft_strdup(arg);
+    if (arg)
+        g_cli_error.arg = ft_strdup(arg);
+    else
+        g_cli_error.arg = NULL;
 	return (CLI_ERROR);
 }
 
-#ifdef CLI_DEBUG_MODE
-
-extern t_cli	**get_args_from_cli(const char **fmt, int ac, char **av)
+extern t_cli	**get_args_from_cli_debug(const char **fmt, int ac, char **av)
 {
 	if (invalid_fmt(fmt) == CLI_ERROR)
 		return (NULL);
-	return (cli_get_arguments(fmt, ac, av));
+	return (get_args_from_cli(fmt, ac, av));
 }
-
-#else
-
-extern t_cli	**get_args_from_cli(const char **fmt, int ac, char **av)
-{
-	return (cli_get_arguments(fmt, ac, av));
-}
-
-#endif
 
 extern void	cli_argfree(t_cli **arg)
 {
@@ -72,7 +63,7 @@ extern void	cli_argfree(t_cli **arg)
 	g_cli_error.error = 0;
 	while (*arg)
 	{
-		printf(
+        printf(
 			"{??} sname = \"%s\"\n"
 			"     lname = \"%s\"\n"
 			"     value = \"%s\"\n"
@@ -101,14 +92,18 @@ extern void	cli_argfree(t_cli **arg)
 int		main(int argc, char **argv)
 {
 	const char	*args[] = {
-		">-l|--level(int:-1,5)",
-		"-r|--recursive",
-		"-integer(int:1,100)",
+        "-f, --frantz(string)",
+        "-g(bool)",
+        "-h(bool)",
+        "-i(bool)",
+        "(int:10,)",
+		"(string:3,10)",
 		NULL
 	};
 
 	t_cli **cli = get_args_from_cli(args, argc - 1, argv + 1);
 	cli_print_error();
+    printf("g_error = %d\n", g_cli_error.error);
 	cli_argfree(cli);
 	return (0);
 }

@@ -16,12 +16,12 @@
 
 extern void    set_arg_by_type(t_cli *arg)
 {
-    if (arg->type == INT_TYPE)
+    if (arg->type & INT_TYPE)
         set_int_arg_value(arg);
-    else if (arg->type == STRING_TYPE)
+    else if (arg->type & STRING_TYPE)
         set_str_arg_value(arg);
     /*
-    else if (arg->type == FLOAT_TYPE)
+    else if (arg->type & FLOAT_TYPE)
         set_float_value();
     */
 }

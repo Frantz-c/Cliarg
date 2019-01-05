@@ -1,3 +1,3 @@
 *.o
-example
-cliarg.h
+*EXE*
+*.dSYM
