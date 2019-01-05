@@ -24,7 +24,19 @@ struct s_cli_error	g_cli_error;
 ">-R|--recursive(int:1,10+)"	= -R [value] ou --recursive [value]
 */
 
-extern void		cli_print_error(void)
+extern int		set_cli_err(int error, const char *arg)
+{
+	g_cli_error.error = error;
+    if (arg)
+        g_cli_error.arg = ft_strdup(arg);
+    else
+        g_cli_error.arg = NULL;
+	return (CLI_ERROR);
+}
+
+#ifdef CLIARG_DEBUG
+
+static void		cli_print_error(void)
 {
 	if (g_cli_error.error == CLI_INVALID_TYPE)
 		printf("%s : invalid type\n", g_cli_error.arg);
@@ -36,22 +48,17 @@ extern void		cli_print_error(void)
 		printf("%s : duplicate argument (from cli)\n", g_cli_error.arg);
 }
 
-extern int		set_cli_err(int error, const char *arg)
-{
-	g_cli_error.error = error;
-    if (arg)
-        g_cli_error.arg = ft_strdup(arg);
-    else
-        g_cli_error.arg = NULL;
-	return (CLI_ERROR);
-}
-
 extern t_cli	**get_args_from_cli_debug(const char **fmt, int ac, char **av)
 {
 	if (invalid_fmt(fmt) == CLI_ERROR)
+    {
+        cli_print_error();
 		return (NULL);
+    }
 	return (get_args_from_cli(fmt, ac, av));
 }
+
+#endif
 
 extern void	cli_argfree(t_cli **arg)
 {
@@ -98,11 +105,13 @@ int		main(int argc, char **argv)
         "-i(bool)",
         "(int:10,)",
 		"(string:3,10)",
+        "(bool)",
 		NULL
 	};
 
-	t_cli **cli = get_args_from_cli(args, argc - 1, argv + 1);
-	cli_print_error();
+	t_cli **cli = get_args_from_cli_debug(args, argc - 1, argv + 1);
+    if (cli == NULL)
+        return (-1);
     printf("g_error = %d\n", g_cli_error.error);
 	cli_argfree(cli);
 	return (0);

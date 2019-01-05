@@ -1,5 +1,5 @@
 NAME = EXE
-CC = gcc -Wall -Wextra -g
+CC = gcc -Wall -Wextra -g -DCLIARG_DEBUG
 FILES = set_arg_by_type.o\
 short_arg.o\
 get_arguments.o\

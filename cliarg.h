@@ -69,7 +69,6 @@ struct	s_cli
 
 extern int		invalid_fmt(const char **fmt);
 extern int		cli_get_type(const char **s);
-extern void		cli_print_error(void);
 extern int		set_cli_err(int error, const char *arg);
 extern t_cli	**get_args_from_cli(const char **fmt, int ac, char **av);
 extern int      search_long_argument(t_cli *arg, int ac, char *av[], t_avstat *stat);
