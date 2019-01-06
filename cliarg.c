@@ -130,7 +130,7 @@ int		main(int argc, char **argv)
 		NULL
 	};
 
-	t_cli **cli = get_args_from_cli(args, argc - 1, argv + 1);
+	t_cli **cli = get_args_from_cli_debug(args, argc - 1, argv + 1);
     if (cli == NULL)
         return (-1);
     printf("g_error = %d\n", g_cli_error.error);
