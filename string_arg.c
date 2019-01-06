@@ -13,19 +13,13 @@
 
 #include "libft.h"
 #include "cliarg.h"
-#include <stdio.h>
 
 extern void        set_str_arg_value(t_cli *cli)
 {
-    const int     length = ft_strlen(cli->value);
-    if (length < cli->min)
-    {
-        cli->flag = CLI_UNDERFLOW_VALUE;
-		ft_memset(cli->value, '\0', length);
-    }
-    else if (length > cli->max)
-    {
-        cli->flag = CLI_OVERFLOW_VALUE;
-		ft_memset(cli->value, '\0', length);
-    }
+	const int	length = ft_strlen(cli->value.str);
+
+	if (length < cli->min)
+		cli->error = CLI_UNDERFLOW_VALUE;
+	else if (length > cli->max)
+		cli->error = CLI_OVERFLOW_VALUE;
 }

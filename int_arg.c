@@ -13,44 +13,24 @@
 
 #include "libft.h"
 #include "cliarg.h"
-#include <stdio.h>
-
-int         is_numeric_string(const char *s)
-{
-    while (*s)
-    {
-       if (*s > '9' || *s < '0') 
-        return (0);
-        s++;
-    }
-    return (1);
-}
 
 extern void		set_int_arg_value(t_cli *cli)
 {
 	long	n;
 
-	if (!is_numeric_string(cli->value))
+	if (!ft_isnumeric(cli->value.str))
 	{
-		cli->flag = CLI_INVALID_VALUE;
-		ft_memset(cli->value, '\0', ft_strlen(cli->value));
-		return;
+		cli->error = CLI_INVALID_VALUE;
+		free(cli->value.ptr);
+		cli->value.ptr = NULL;
+		return ;
 	}
-	n = ft_atol(cli->value);
+	n = ft_atol(cli->value.str);
 	if (n > cli->max)
-	{
-		cli->flag = CLI_OVERFLOW_VALUE;
-		ft_memset(cli->value, '\0', ft_strlen(cli->value));
-	}
+		cli->error = CLI_OVERFLOW_VALUE;
 	else if (n < cli->min)
-	{
-		cli->flag = CLI_UNDERFLOW_VALUE;
-		ft_memset(cli->value, '\0', ft_strlen(cli->value));
-	}
-	else
-	{
-		free(cli->value);
-		cli->value = malloc(sizeof(long));
-		*((long*)cli->value) = n;
-	}
+		cli->error = CLI_UNDERFLOW_VALUE;
+	free(cli->value.ptr);
+	cli->value.ptr = malloc(sizeof(long));
+	*cli->value.plong = n;
 }

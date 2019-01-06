@@ -16,23 +16,23 @@
 
 static int		get_arg_short_bool(t_cli *cli, int ac, char **av, t_avstat *stat)
 {
-    const int   len = ft_strlen(cli->sname) - 1;
+	const int   len = ft_strlen(cli->sname) - 1;
 	int			i;
-    char        prefix[3];
-    char        c;
+	char        prefix[3];
+	char        c;
 
 	i = 0;
-    c = cli->sname[len];
-    if (len == 0)
-        prefix[0] = '\0';
-    else
-        ft_strncpy(prefix, cli->sname, len);
+	c = cli->sname[len];
+	if (len == 0)
+		prefix[0] = '\0';
+	else
+		ft_strncpy(prefix, cli->sname, len);
 	while (i < ac)
 	{
-        if (!stat->checked[i] && (!prefix[0] || !ft_strncmp(av[i], prefix, len))
-            && ft_strchr(av[i], c))
+		if (!stat->checked[i] && (!prefix[0] || !ft_strncmp(av[i], prefix, len))
+			&& ft_strchr(av[i], c))
 		{
-			cli->value = ft_strdup("");
+			cli->value.str = ft_strdup("");
 			return (1);
 		}
 		i++;
@@ -52,15 +52,15 @@ static int		get_arg_short(t_cli *cli, int ac, char **av, t_avstat *stat)
 		{
 			if (*(av[i] + slen) != '=')
 			{
-				set_cli_err(CLI_NO_VALUE, ft_strdup(av[i]));
+				set_cli_err(CLI_NO_VALUE, av[i]);
 				return (CLI_ERROR);
 			}
-			if (cli->value)
-				free(cli->value);
-			cli->value = ft_strdup(av[i] + slen + 1);
+			if (cli->value.ptr)
+				free(cli->value.ptr);
+			cli->value.str = ft_strdup(av[i] + slen + 1);
 			stat->checked[i] = 1;
-            stat->remaind--;
-            set_arg_by_type(cli);
+			stat->remaind--;
+			set_arg_by_type(cli);
 			return (1);
 		}
 		i++;
@@ -68,7 +68,6 @@ static int		get_arg_short(t_cli *cli, int ac, char **av, t_avstat *stat)
 	return (0);
 }
 
-// next arg (same as get_arg_long_next)
 static int		get_arg_short_next(t_cli *cli, int ac, char **av, t_avstat *stat)
 {
 	int		i;
@@ -79,13 +78,13 @@ static int		get_arg_short_next(t_cli *cli, int ac, char **av, t_avstat *stat)
 		if (!stat->checked[i] && !ft_strcmp(cli->sname, av[i]))
 		{
 			if (i + 1 == ac)
-				return (set_cli_err(CLI_NO_VALUE, ft_strdup(av[i])));
-			if (cli->value)
-				free(cli->value);
-			cli->value = ft_strdup(av[i + 1]);
+				return (set_cli_err(CLI_NO_VALUE, av[i]));
+			if (cli->value.ptr)
+				free(cli->value.ptr);
+			cli->value.str = ft_strdup(av[i + 1]);
 			stat->checked[i] = 1;
-            stat->remaind--;
-            set_arg_by_type(cli);
+			stat->remaind--;
+			set_arg_by_type(cli);
 			return (1);
 		}
 		i++;
@@ -94,8 +93,8 @@ static int		get_arg_short_next(t_cli *cli, int ac, char **av, t_avstat *stat)
 }
 
 /*
-**  pas de cumul (-a : -abc invalide)
-*/
+ **  pas de cumul (-a : -abc invalide)
+ */
 static int		get_arg_short_uniq_bool(t_cli *cli, int ac, char **av, t_avstat *stat)
 {
 	int		i;
@@ -105,9 +104,9 @@ static int		get_arg_short_uniq_bool(t_cli *cli, int ac, char **av, t_avstat *sta
 	{
 		if (!stat->checked[i] && !ft_strcmp(cli->sname, av[i]))
 		{
-			cli->value = ft_strdup("");
+			cli->value.str = ft_strdup("");
 			stat->checked[i] = 1;
-            stat->remaind--;
+			stat->remaind--;
 			return (1);
 		}
 		i++;
@@ -117,24 +116,24 @@ static int		get_arg_short_uniq_bool(t_cli *cli, int ac, char **av, t_avstat *sta
 
 extern int     search_short_argument_next(t_cli *arg, int ac, char *av[], t_avstat *stat)
 {
-    int     error;
+	int     error;
 
-    error = 0;
-    if (arg->type == BOOL_TYPE)
-        error = get_arg_short_uniq_bool(arg, ac, av, stat);
-    else
-        error = get_arg_short_next(arg, ac, av, stat);
-    return (error);
+	error = 0;
+	if (arg->type == BOOL_TYPE)
+		error = get_arg_short_uniq_bool(arg, ac, av, stat);
+	else
+		error = get_arg_short_next(arg, ac, av, stat);
+	return (error);
 }
 
 extern int     search_short_argument(t_cli *arg, int ac, char *av[], t_avstat *stat)
 {
-    int     error;
+	int     error;
 
-    error = 0;
-    if (arg->type == BOOL_TYPE)
-        error = get_arg_short_bool(arg, ac, av, stat);
-    else
-        error = get_arg_short(arg, ac, av, stat);
-    return (error);
+	error = 0;
+	if (arg->type == BOOL_TYPE)
+		error = get_arg_short_bool(arg, ac, av, stat);
+	else
+		error = get_arg_short(arg, ac, av, stat);
+	return (error);
 }

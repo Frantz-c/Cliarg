@@ -51,5 +51,3 @@ extern int		cli_get_type(const char **s)
 	}
 	return (CLI_ERROR);
 }
-
-

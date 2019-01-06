@@ -16,17 +16,17 @@
 
 static int		get_arg_long_bool(t_cli *cli, int ac, char **av, t_avstat *stat)
 {
-	int			i;
+	int		i;
 
 	i = 0;
 	while (i < ac)
 	{
 		if (!stat->checked[i] && !ft_strcmp(cli->lname, av[i]))
 		{
-			cli->value = ft_strdup("");
+			cli->value.str = ft_strdup("");
 			stat->checked[i] = 1;
-            stat->remaind--;
-			cli->traited++;
+			stat->remaind--;
+			cli->stat.traited = 1;
 			return (1);
 		}
 		i++;
@@ -47,16 +47,16 @@ static int		get_arg_long(t_cli *cli, int ac, char **av, t_avstat *stat)
 		{
 			if ((eq_pos = ft_strchr(av[i], '=')) == NULL)
 			{
-				set_cli_err(CLI_NO_VALUE, ft_strdup(av[i]));
+				set_cli_err(CLI_NO_VALUE, av[i]);
 				return (CLI_ERROR);
 			}
-			if (cli->value)
-				free(cli->value);
-			cli->value = ft_strdup(eq_pos + 1);
+			if (cli->value.ptr)
+				free(cli->value.ptr);
+			cli->value.str = ft_strdup(eq_pos + 1);
 			stat->checked[i] = 1;
-            stat->remaind--;
-            set_arg_by_type(cli);
-			cli->traited++;
+			stat->remaind--;
+			set_arg_by_type(cli);
+			cli->stat.traited = 1;
 			return (1);
 		}
 		i++;
@@ -64,7 +64,6 @@ static int		get_arg_long(t_cli *cli, int ac, char **av, t_avstat *stat)
 	return (0);
 }
 
-// next arg
 static int		get_arg_long_next(t_cli *cli, int ac, char **av, t_avstat *stat)
 {
 	int		i;
@@ -75,14 +74,14 @@ static int		get_arg_long_next(t_cli *cli, int ac, char **av, t_avstat *stat)
 		if (!stat->checked[i] && !ft_strcmp(cli->lname, av[i]))
 		{
 			if (i + 1 == ac)
-				return (set_cli_err(CLI_NO_VALUE, ft_strdup(av[i])));
-			if (cli->value)
-				free(cli->value);
-			cli->value = ft_strdup(av[i + 1]);
+				return (set_cli_err(CLI_NO_VALUE, av[i]));
+			if (cli->value.ptr)
+				free(cli->value.ptr);
+			cli->value.str = ft_strdup(av[i + 1]);
 			stat->checked[i] = 1;
-            stat->remaind--;
-            set_arg_by_type(cli);
-			cli->traited++;
+			stat->remaind--;
+			set_arg_by_type(cli);
+			cli->stat.traited = 1;
 			return (1);
 		}
 		i++;
@@ -99,9 +98,9 @@ static int		get_arg_long_next_bool(t_cli *cli, int ac, char **av, t_avstat *stat
 	{
 		if (!stat->checked[i] && !ft_strcmp(cli->lname, av[i]))
 		{
-			cli->value = ft_strdup("");
+			cli->value.str = ft_strdup("");
 			stat->checked[i] = 1;
-			cli->traited++;
+			cli->stat.traited = 1;
 			return (1);
 		}
 		i++;
@@ -111,22 +110,22 @@ static int		get_arg_long_next_bool(t_cli *cli, int ac, char **av, t_avstat *stat
 
 extern int     search_long_argument(t_cli *arg, int ac, char *av[], t_avstat *stat)
 {
-    int     error;
+	int     error;
 
-    error = 0;
-    if (arg->value_is_next_arg)
-    {
-        if (arg->type == BOOL_TYPE)
-            error = get_arg_long_next_bool(arg, ac, av, stat);
-        else
-            error = get_arg_long_next(arg, ac, av, stat);
-    }
-    else
-    {
-        if (arg->type == BOOL_TYPE)
-            error = get_arg_long_bool(arg, ac, av, stat);
-        else
-            error = get_arg_long(arg, ac, av, stat);
-    }
-    return (error);
+	error = 0;
+	if (arg->stat.valnextarg)
+	{
+		if (arg->type == BOOL_TYPE)
+			error = get_arg_long_next_bool(arg, ac, av, stat);
+		else
+			error = get_arg_long_next(arg, ac, av, stat);
+	}
+	else
+	{
+		if (arg->type == BOOL_TYPE)
+			error = get_arg_long_bool(arg, ac, av, stat);
+		else
+			error = get_arg_long(arg, ac, av, stat);
+	}
+	return (error);
 }

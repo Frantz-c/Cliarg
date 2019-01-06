@@ -33,8 +33,8 @@ static int		verify_fmt_argument_name(const char **fmt)
 
 	if (*s == '>')
 		s++;
-    else if (*s == '(')
-        return (0);
+	else if (*s == '(')
+		return (0);
 	if (!*s || !is_valid_name_prefix(&s) || !*(++s))
 		return (CLI_ERROR);
 	if (ft_isalpha(*s)) //Pas d'argument court
@@ -44,8 +44,8 @@ static int		verify_fmt_argument_name(const char **fmt)
 	}
 	else if (*s == ',') //Argument court. argument long ?
 	{
-        if (*(s + 1) == ' ')
-            s++;
+		if (*(s + 1) == ' ')
+			s++;
 		if (!*(++s) || !is_valid_name_prefix(&s))
 			return (CLI_ERROR);
 		while (ft_isalpha(*(++s))) //Argument long
@@ -61,7 +61,7 @@ static int		verify_fmt_argument_type(const char **fmt)
 	int			type;
 
 	if (*(s++) != '(')
-        return (*s == '\0') ? 0 : CLI_ERROR;
+		return (*s == '\0') ? 0 : CLI_ERROR;
 	if ((type = cli_get_type(&s)) == CLI_ERROR)
 		return (CLI_ERROR);
 	if (*s == ':')
@@ -112,24 +112,24 @@ extern int		invalid_fmt(const char **fmt)
 	int			type;
 	int			prefix;
 
-/*
-	if (verify_noprefix_args_position(fmt) == CLI_ERROR)
-        return (set_cli_err(CLI_INVALID_NOPRE_POS, NULL));
-*/
+	/*
+	   if (verify_noprefix_args_position(fmt) == CLI_ERROR)
+	   return (set_cli_err(CLI_INVALID_NOPRE_POS, NULL));
+	 */
 	i = 0;
 	while ((argument = fmt[i]))
 	{
-        if (*argument == '\0')
-            return (set_cli_err(CLI_INVALID_NAME, fmt[i]));
-        if (!strcmp(argument, "(bool)"))
+		if (*argument == '\0')
+			return (set_cli_err(CLI_INVALID_NAME, fmt[i]));
+		if (!strcmp(argument, "(bool)"))
 			return (set_cli_err(CLI_INVALID_TYPE, fmt[i]));
 		if ((prefix = verify_fmt_argument_name(&argument)) == CLI_ERROR)
 			return (set_cli_err(CLI_INVALID_NAME, fmt[i]));
 		if (*argument != '\0' &&
-			(type = verify_fmt_argument_type(&argument)) == CLI_ERROR)
+				(type = verify_fmt_argument_type(&argument)) == CLI_ERROR)
 			return (set_cli_err(CLI_INVALID_TYPE, fmt[i]));
 		if (*argument != '\0' && !prefix &&
-			verify_fmt_default(argument, type) == CLI_ERROR)
+				verify_fmt_default(argument, type) == CLI_ERROR)
 			return (set_cli_err(CLI_INVALID_DEFAULT, fmt[i]));
 		i++;
 	}
