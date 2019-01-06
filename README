@@ -1,0 +1,37 @@
+Utilisation : 
+
+la fonction get_args_from_cli(char *args[], int argc, char *argv[]) 
+prend un tableau de chaines contenant les infos sur les arguments attendus,
+le nombre d'arguments recus et la liste des arguments recus en parametres.
+
+
+
+valeur de retour :
+	un tableau de t_cli de la meme taille que le 1er argument et dans le meme ordre.
+
+
+
+formatage du 1er argument :
+	>[nom court], [nom long]([type]:[min],[max]) = [valeur]
+	([type]:[min],[max])
+
+>			= la valeur est dans l'argument suivant.
+[nom court]	= nom compose d'une seule lettre precedee de '-' ou de rien.
+[nom long]	= nom compose de plusieurs lettres, '-', ... precedes de '-' ou de rien.
+[type]		= type attendu (int, string, str, float, int[], str[], float[], bool)
+[min]		= valeur minimum d'un int ou d'un float, nombre de caracteres minimum d'une chaine.
+[max]		= valeur maximum d'un int ou d'un float, nombre de caracteres maximum d'une chaine.
+[valeur]	= valeur par defaut de l'argument. (NULL si non-precise).
+
+elements facultatifs :
+	>
+	[nom court] ou [nom long]
+	([type]:[min],[max])
+	[min]
+	[max]
+	 = [valeur]
+
+le type par defaut est bool
+le minimum par defaut est 2^63 * -1
+le maximum par defaut est 2^63 - 1
+la valeur par defaut est NULL

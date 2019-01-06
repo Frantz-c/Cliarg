@@ -11,42 +11,21 @@
 /*                                                        /                   */
 /* ************************************************************************** */
 
+#ifdef CLIARG_DEBUG
+
 #include "libft.h"
 #include "cliarg.h"
 
 static int		is_valid_name_prefix(const char **s)
 {
-	while (!ft_isalpha(**s) && **s == '-')
+	if (**s == '-')
+	{
 		(*s)++;
+		if (**s == '-')
+			(*s)++;
+	}
 	return (ft_isalpha(**s));
 }
-
-extern int		cli_get_type(const char **s)
-{
-	static char	*type[5] = {
-		"int", "float", "string", "str", "bool"
-	};
-	static int	length[5] = {
-		3, 5, 6, 3, 4
-	};
-	static int	return_v[5] = {
-		INT_TYPE, FLOAT_TYPE, STRING_TYPE, STRING_TYPE, BOOL_TYPE
-	};
-	int			i;
-
-	i = 0;
-	while (i < 5)
-	{
-		if (!ft_strncmp(*s, type[i], length[i]))
-		{
-			*s += length[i];
-			return (return_v[i]);
-		}
-		i++;
-	}
-	return (CLI_ERROR);
-}
-
 
 static int		verify_fmt_argument_name(const char **fmt)
 {
@@ -73,11 +52,12 @@ static int		verify_fmt_argument_name(const char **fmt)
 			;
 	}
 	*fmt = s;
-	return (0);
+	return (1);
 }
 
-static int		verify_fmt_argument_type(const char *s)
+static int		verify_fmt_argument_type(const char **fmt)
 {
+	const char	*s = *fmt;
 	int			type;
 
 	if (*(s++) != '(')
@@ -97,8 +77,31 @@ static int		verify_fmt_argument_type(const char *s)
 		while (*s && ft_isdigit(*s))
 			s++;
 	}
-	if (*(s++) != ')' || *s)
+	if (*(s++) != ')')
 		return (CLI_ERROR);
+	*fmt = s;
+	return (type);
+}
+
+static int		verify_fmt_default(const char *s, int type)
+{
+	if (*s == ' ')
+		s++;
+	if (*s == '=')
+		s++;
+	else
+		return (CLI_ERROR);
+	if (*s == ' ')
+		s++;
+	if (type == INT_TYPE)
+	{
+		if (!ft_isnumeric(s))
+			return (CLI_ERROR);
+	}
+	else if (type == BOOL_TYPE)
+		return (CLI_ERROR);
+	else if (type == FLOAT_TYPE)
+		return (0);
 	return (0);
 }
 
@@ -106,21 +109,31 @@ extern int		invalid_fmt(const char **fmt)
 {
 	const char	*argument;
 	int			i;
+	int			type;
+	int			prefix;
 
+/*
+	if (verify_noprefix_args_position(fmt) == CLI_ERROR)
+        return (set_cli_err(CLI_INVALID_NOPRE_POS, NULL));
+*/
 	i = 0;
-	while (fmt[i])
+	while ((argument = fmt[i]))
 	{
-		argument = fmt[i];
         if (*argument == '\0')
             return (set_cli_err(CLI_INVALID_NAME, fmt[i]));
         if (!strcmp(argument, "(bool)"))
 			return (set_cli_err(CLI_INVALID_TYPE, fmt[i]));
-		if (verify_fmt_argument_name(&argument) == CLI_ERROR)
+		if ((prefix = verify_fmt_argument_name(&argument)) == CLI_ERROR)
 			return (set_cli_err(CLI_INVALID_NAME, fmt[i]));
 		if (*argument != '\0' &&
-			verify_fmt_argument_type(argument) == CLI_ERROR)
+			(type = verify_fmt_argument_type(&argument)) == CLI_ERROR)
 			return (set_cli_err(CLI_INVALID_TYPE, fmt[i]));
+		if (*argument != '\0' && !prefix &&
+			verify_fmt_default(argument, type) == CLI_ERROR)
+			return (set_cli_err(CLI_INVALID_DEFAULT, fmt[i]));
 		i++;
 	}
 	return (0);
 }
+
+#endif

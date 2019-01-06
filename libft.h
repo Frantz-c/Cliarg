@@ -20,9 +20,12 @@
 typedef	unsigned long int	t_longword;
 typedef	unsigned char		t_byte;
 typedef	int					t_bool;
+typedef unsigned short      t_ushort;
+typedef unsigned short      t_ush;
 typedef	unsigned long		t_ulong;
 typedef	unsigned long long	t_ullong;
 typedef	unsigned int		t_uint;
+typedef long double         t_ld;
 
 # define FT_LWSIZ		8
 # define FT_TRUE		1
@@ -131,6 +134,7 @@ char				*ft_strnstr(const char *haystack, const char *needle,
 void				ft_strclr(char *s);
 char				*ft_strsub(const char *s, unsigned int start, size_t len);
 char				*ft_strjoin(const char *s1, const char *s2);
+char				*ft_strjpath(const char *s1, const char *s2);
 char				*ft_strtrim(const char *s);
 char				*ft_ltrim(const char *s);
 char				*ft_strctrim(const char *s, char c);
@@ -153,6 +157,7 @@ int					ft_isdigit(int c);
 int					ft_isalnum(int c);
 int					ft_isascii(int c);
 int					ft_isprint(int c);
+int					ft_isnumeric(const char *s);
 int					ft_toupper(int c);
 int					ft_tolower(int c);
 
@@ -180,6 +185,11 @@ t_options			*ft_get_options(int ac, char **av);
 void				ft_print_options(t_options *opt);
 void				ft_free_options(t_options **opt);
 
+void		        *free_arg1_arg2_and_return_arg3(void *a1, void *a2, void *a3);
+void		        assign_null_2a(void **a1, void **a2);
+int		            get_next_line(const int fd, char **line);
+
+int                 ft_printf(const char *fmt, ...);
 /*
 **	fonctions pour le type t_array
 void				print_array(t_array *a);

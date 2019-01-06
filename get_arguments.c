@@ -47,6 +47,7 @@ t_cli	*new_arg(void)
 	new->max = 0x7fffffffffffffffL;
 	new->len = 0;
 	new->value_is_next_arg = 0;
+	new->traited = 0;
 	return (new);
 }
 
@@ -128,7 +129,7 @@ t_cli	**cli_search_arguments(t_cli **arg, int ac, char **av)
 	i = 0;
 	while (arg[i])
 	{
-        if (arg[i]->sname && arg[i]->value_is_next_arg && arg[i]->value == NULL)
+        if (arg[i]->sname && arg[i]->value_is_next_arg && arg[i]->traited == 0)
         {
             if (search_short_argument_next(arg[i], ac, av, &avstat) == CLI_ERROR)
                 return (free_cli_and_return_null(arg));
@@ -138,7 +139,7 @@ t_cli	**cli_search_arguments(t_cli **arg, int ac, char **av)
     i = 0;
 	while (arg[i])
 	{
-        if (arg[i]->sname && !arg[i]->value_is_next_arg && arg[i]->value == NULL)
+        if (arg[i]->sname && !arg[i]->value_is_next_arg && arg[i]->traited == 0)
         {
             if (search_short_argument(arg[i], ac, av, &avstat) == CLI_ERROR)
                 return (free_cli_and_return_null(arg));
@@ -234,8 +235,10 @@ long			get_number(const char **s)
 	return ((sign) ? ~n + 1 : n);
 }
 
-void			set_argument_type(const char *s, t_cli *arg)
+void			set_argument_type(const char **fmt, t_cli *arg)
 {
+	const char	*s = *fmt + 1;
+
     arg->type = cli_get_type(&s);
     if (!arg->lname && !arg->sname)
         arg->type |= NOPREFIX;
@@ -243,10 +246,23 @@ void			set_argument_type(const char *s, t_cli *arg)
 	{
 		s++;
 		arg->min = get_number(&s);
-		if (*(++s) == ')')
-			return ;
-		arg->max = get_number(&s);
+		if (*(++s) != ')')
+			arg->max = get_number(&s);
 	}
+	*fmt = s + 1;
+}
+
+void			set_default_value(const char *fmt, t_cli *arg)
+{
+	if (*fmt == '\0')
+		return ;
+	if (*fmt == ' ')
+		fmt++;
+	fmt++;
+	if (*fmt == ' ')
+		fmt++;
+	arg->value = ft_strdup(fmt);
+    set_arg_by_type(arg);
 }
 
 int				duplicate_argument(int ac, char **av)
@@ -277,7 +293,7 @@ extern t_cli	**get_args_from_cli(const char **fmt, int ac, char **av)
 	int			i;
 
     set_cli_err(0, NULL);
-	arg = malloc(sizeof(t_cli*) * (fmt_count(fmt) + 10));
+	arg = malloc(sizeof(t_cli*) * (fmt_count(fmt) + 1));
 	i = 0;
 	while (fmt[i])
 	{
@@ -288,11 +304,13 @@ extern t_cli	**get_args_from_cli(const char **fmt, int ac, char **av)
 		if (*argument == '\0')
 			arg[i]->type = BOOL_TYPE;
 		else
-			set_argument_type(argument + 1, arg[i]);
+		{
+			set_argument_type(&argument, arg[i]);
+			set_default_value(argument, arg[i]);
+		}
 		i++;
 	}
 	arg[i] = NULL;
-	if (duplicate_argument(ac, av) == CLI_ERROR)
-		return (free_cli_and_return_null(arg));
-	return (cli_search_arguments(arg, ac, av));
+	return (duplicate_argument(ac, av) == CLI_ERROR ?
+		free_cli_and_return_null(arg) : cli_search_arguments(arg, ac, av));
 }

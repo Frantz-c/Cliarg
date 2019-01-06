@@ -25,3 +25,31 @@ extern void    set_arg_by_type(t_cli *arg)
         set_float_value();
     */
 }
+
+extern int		cli_get_type(const char **s)
+{
+	static char	*type[5] = {
+		"int", "float", "string", "str", "bool"
+	};
+	static int	length[5] = {
+		3, 5, 6, 3, 4
+	};
+	static int	return_v[5] = {
+		INT_TYPE, FLOAT_TYPE, STRING_TYPE, STRING_TYPE, BOOL_TYPE
+	};
+	int			i;
+
+	i = 0;
+	while (i < 5)
+	{
+		if (!ft_strncmp(*s, type[i], length[i]))
+		{
+			*s += length[i];
+			return (return_v[i]);
+		}
+		i++;
+	}
+	return (CLI_ERROR);
+}
+
+

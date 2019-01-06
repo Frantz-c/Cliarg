@@ -26,10 +26,10 @@ static int		get_arg_short_bool(t_cli *cli, int ac, char **av, t_avstat *stat)
     if (len == 0)
         prefix[0] = '\0';
     else
-        strncpy(prefix, cli->sname, len);
+        ft_strncpy(prefix, cli->sname, len);
 	while (i < ac)
 	{
-        if (!stat->checked[i] && (!prefix[0] || !strncmp(av[i], prefix, len))
+        if (!stat->checked[i] && (!prefix[0] || !ft_strncmp(av[i], prefix, len))
             && ft_strchr(av[i], c))
 		{
 			cli->value = ft_strdup("");
@@ -55,6 +55,8 @@ static int		get_arg_short(t_cli *cli, int ac, char **av, t_avstat *stat)
 				set_cli_err(CLI_NO_VALUE, ft_strdup(av[i]));
 				return (CLI_ERROR);
 			}
+			if (cli->value)
+				free(cli->value);
 			cli->value = ft_strdup(av[i] + slen + 1);
 			stat->checked[i] = 1;
             stat->remaind--;
@@ -77,10 +79,9 @@ static int		get_arg_short_next(t_cli *cli, int ac, char **av, t_avstat *stat)
 		if (!stat->checked[i] && !ft_strcmp(cli->sname, av[i]))
 		{
 			if (i + 1 == ac)
-			{
-				set_cli_err(CLI_NO_VALUE, ft_strdup(av[i]));
-				return (CLI_ERROR);
-			}
+				return (set_cli_err(CLI_NO_VALUE, ft_strdup(av[i])));
+			if (cli->value)
+				free(cli->value);
 			cli->value = ft_strdup(av[i + 1]);
 			stat->checked[i] = 1;
             stat->remaind--;
@@ -131,7 +132,7 @@ extern int     search_short_argument(t_cli *arg, int ac, char *av[], t_avstat *s
     int     error;
 
     error = 0;
-    if (arg->type == BOOL_TYPE && !arg->value)
+    if (arg->type == BOOL_TYPE)
         error = get_arg_short_bool(arg, ac, av, stat);
     else
         error = get_arg_short(arg, ac, av, stat);

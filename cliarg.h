@@ -43,6 +43,7 @@ struct	s_cli
 	int		value_is_next_arg;	// private
 	int		plus;				// private
 	int		flag;				// overflow, underflow, invalid, ...
+	int		traited;
 };
 
 #define CLI_ERROR				-1
@@ -52,6 +53,8 @@ struct	s_cli
 #define CLI_DUPLICATE_AV		4
 #define CLI_TO_FEW_ARG          5
 #define CLI_TO_MANY_ARG         6
+#define CLI_INVALID_DEFAULT		7
+#define CLI_INVALID_NOPRE_POS	8
 
 // flag values
 #define CLI_INVALID_VALUE       0x1

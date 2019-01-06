@@ -26,6 +26,7 @@ static int		get_arg_long_bool(t_cli *cli, int ac, char **av, t_avstat *stat)
 			cli->value = ft_strdup("");
 			stat->checked[i] = 1;
             stat->remaind--;
+			cli->traited++;
 			return (1);
 		}
 		i++;
@@ -49,10 +50,13 @@ static int		get_arg_long(t_cli *cli, int ac, char **av, t_avstat *stat)
 				set_cli_err(CLI_NO_VALUE, ft_strdup(av[i]));
 				return (CLI_ERROR);
 			}
+			if (cli->value)
+				free(cli->value);
 			cli->value = ft_strdup(eq_pos + 1);
 			stat->checked[i] = 1;
             stat->remaind--;
             set_arg_by_type(cli);
+			cli->traited++;
 			return (1);
 		}
 		i++;
@@ -71,13 +75,14 @@ static int		get_arg_long_next(t_cli *cli, int ac, char **av, t_avstat *stat)
 		if (!stat->checked[i] && !ft_strcmp(cli->lname, av[i]))
 		{
 			if (i + 1 == ac)
-			{
-				set_cli_err(CLI_NO_VALUE, ft_strdup(av[i]));
-				return (CLI_ERROR);
-			}
+				return (set_cli_err(CLI_NO_VALUE, ft_strdup(av[i])));
+			if (cli->value)
+				free(cli->value);
 			cli->value = ft_strdup(av[i + 1]);
 			stat->checked[i] = 1;
             stat->remaind--;
+            set_arg_by_type(cli);
+			cli->traited++;
 			return (1);
 		}
 		i++;
@@ -96,6 +101,7 @@ static int		get_arg_long_next_bool(t_cli *cli, int ac, char **av, t_avstat *stat
 		{
 			cli->value = ft_strdup("");
 			stat->checked[i] = 1;
+			cli->traited++;
 			return (1);
 		}
 		i++;
